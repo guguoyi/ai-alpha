@@ -1,0 +1,4 @@
+{
+  "owner_feishu_open_id": "ou_YOUR_OPEN_ID_HERE",
+  "_comment": "Copy this file to config.json and replace ou_YOUR_OPEN_ID_HERE with your actual Feishu open_id. Find it by: 1) Send a message to your bot on Feishu, 2) Run: openclaw logs --tail 20 | grep 'ou_', 3) Look for 'received message from ou_xxxxx'"
+}
