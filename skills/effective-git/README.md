@@ -1,111 +1,132 @@
 # Effective Git
 
-智能 Git 工作流助手，帮助您遵循最佳实践进行代码提交、推送和管理变更。
+Intelligent Git workflow assistant that helps you commit, push, and manage code changes following best practices.
 
-## 简介
+## Introduction
 
-Effective Git 是一个智能的 Git 工作流助手，它能够：
-- 分析代码变更并提供提交建议
-- 自动检测项目提交规范
-- 提供安全的推送操作（带确认机制）
-- 智能解决合并冲突
-- 快速执行常用 Git 命令
+Effective Git is an intelligent Git workflow assistant that can:
+- Analyze code changes and provide commit suggestions
+- Automatically detect project commit conventions
+- Provide safe push operations with confirmation mechanisms
+- Intelligently resolve merge conflicts
+- Quickly execute common Git commands
 
-## 快速开始
+## Quick Start
 
-### 获取帮助
+### Getting Help
 
 ```bash
-# 显示使用指南
+# Display usage guide
 ./scripts/show_help.sh
 
-# 查看最佳实践
-./references/best-practices.md
+# View best practices
+cat ./references/best-practices.md
 
-# 查看冲突解决指南
-./references/conflict-resolution.md
+# View conflict resolution guide
+cat ./references/conflict-resolution.md
 
-# 查看快速命令列表
-./references/quick-commands.md
+# View quick commands list
+cat ./references/quick-commands.md
 ```
 
-## 核心功能
+## Core Features
 
-### 1. 快速操作模式 (Quick Operations)
+### 1. Quick Operations Mode
 
-使用 `gq` 前缀执行快速、只读的 Git 操作：
+Use the `gq` prefix for quick, read-only Git operations:
 
 ```bash
-# 分支操作
-gq b:l          # 列出所有分支
-gq b-> main     # 切换到 main 分支
-gq b:n feature  # 创建新分支
-gq b:d old      # 删除分支
+# Branch operations
+gq b:l          # List all branches
+gq b-> main     # Switch to main branch
+gq b:n feature  # Create new branch
+gq b:d old      # Delete branch
 
-# 状态查看
-gq s            # 简短状态
-gq l            # 最近提交
-gq d            # 查看变更
+# Status & info
+gq s            # Short status
+gq l            # Recent commits
+gq d            # Show changes
 
-# 暂存操作
-gq st:s         # 暂存变更
-gq st:p         # 弹出暂存
+# Stash operations
+gq st:s         # Stash changes
+gq st:p         # Pop stash
+
+# Remote operations
+gq r:f          # Fetch remote updates
+
+# Quick commit
+gq c "message"  # Add all and commit
+gq c:a          # Amend last commit
 ```
 
-完整命令列表请参考 [quick-commands.md](references/quick-commands.md)。
+See [quick-commands.md](references/quick-commands.md) for the full command list.
 
-### 2. 完整工作流模式 (Full Workflow)
+**Important**: Quick commands require explicit `gq` prefix to avoid accidental triggering. Use only for read-only or low-risk operations; dangerous operations still require the full workflow.
 
-对于提交、推送、合并等操作，使用自然语言描述：
+### 2. Full Workflow Mode
+
+For commits, pushes, merges, and other operations, use natural language:
 
 ```bash
-# 提交代码（自动分析变更并提供建议）
-"帮我提交代码"
+# Commit code (automatically analyzes changes and provides suggestions)
+"help me commit code"
 
-# 推送代码（带安全检查）
-"推送代码到远程"
+# Push code (with safety checks)
+"push code to remote"
 
-# 解决冲突
-"解决合并冲突"
+# Resolve conflicts
+"resolve merge conflicts"
+
+# Rebase operation
+"rebase onto main"
 ```
 
-#### 完整工作流步骤
+#### Full Workflow Steps
 
-1. **分析变更**
+1. **Analyze Changes**
    ```bash
    ./scripts/analyze_changes.sh
    ```
-   了解当前分支、未提交变更、最近提交历史。
+   Understand current branch, uncommitted changes, recent commit history, and last commit details.
 
-2. **确定提交策略**
+2. **Determine Commit Strategy**
    
-   系统会自动判断应该使用 `git commit --amend` 还是创建新提交：
+   The system automatically decides whether to use `git commit --amend` or create a new commit:
    
-   - **使用 amend**：修复上次提交的小问题、添加遗漏文件、上次提交未推送
-   - **使用新提交**：新的逻辑单元、上次提交已推送、变更与上次无关
+   - **Use amend**: Fixing small issues in last commit, adding forgotten files, last commit not pushed, changes logically belong to last commit
+   - **Use new commit**: New logical unit, last commit already pushed, changes unrelated to last commit
 
-3. **检查项目规范**
+3. **Check Project Conventions**
    
-   自动分析最近提交历史，检测：
-   - 提交前缀（feat:, fix:, chore: 等）
-   - 工单引用（#123, JIRA-456）
-   - 表情符号使用（✨, 🐛, 📝）
-   - 大小写风格
-
-4. **编写提交信息**
+   Automatically analyze recent commit history to detect:
+   - Commit prefixes (feat:, fix:, chore:, etc.)
+   - Ticket references (#123, JIRA-456)
+   - Emoji usage (✨, 🐛, 📝)
+   - Capitalization style
    
-   遵循最佳实践：
-   - 使用祈使语气（"Add feature" 而非 "Added feature"）
-   - 主题行不超过 50 字符
-   - 具体且描述性
+   If unclear, asks user about project conventions.
 
-5. **安全推送**
+4. **Write Commit Message**
    
-   仅推送到当前分支，显示将要推送的内容并请求确认。
+   Follow best practices:
+   - Use imperative mood ("Add feature" not "Added feature")
+   - Keep subject line under 50 characters
+   - Be specific and descriptive
+   - Match project conventions
 
-## 最佳实践
+5. **Safe Push**
+   
+   **Critical constraint**: Only push to current branch.
+   
+   Before pushing:
+   1. Confirm current branch
+   2. Show what will be pushed
+   3. Ask user for confirmation
+   4. Execute push
 
-### 提交信息规范
+## Best Practices
+
+### Commit Message Format
 
 ```
 <type>(<scope>): <subject>
@@ -115,17 +136,23 @@ gq st:p         # 弹出暂存
 <footer>
 ```
 
-**类型说明：**
-- `feat`: 新功能
-- `fix`: 修复 bug
-- `docs`: 文档变更
-- `style`: 代码格式（无逻辑变更）
-- `refactor`: 代码重构
-- `perf`: 性能优化
-- `test`: 测试相关
-- `chore`: 维护任务
+**Type definitions:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style (no logic change)
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Test related
+- `chore`: Maintenance tasks
 
-**示例：**
+**Rules:**
+1. **Subject line**: Under 50 characters, imperative mood
+2. **Body**: Wrap at 72 characters, explain what and why (not how)
+3. **Atomic commits**: One logical change per commit
+4. **Present tense**: "Fix bug" not "Fixed bug"
+
+**Example:**
 ```
 feat(auth): add OAuth2 login support
 
@@ -135,133 +162,189 @@ Users can now sign in using their existing accounts.
 Closes #123
 ```
 
-### 危险操作
+### Dangerous Operations
 
-以下操作需要用户确认：
+The following operations require user confirmation and risk explanation:
 - `git push --force` / `git push -f`
 - `git reset --hard`
 - `git clean -fd`
-- `git rebase` 在共享分支上
-- `git branch -D`（强制删除）
-- 任何重写历史的操作
+- `git rebase` on shared branches
+- `git branch -D` (force delete)
+- Any history rewriting operations
 
-## 冲突解决
+## Conflict Resolution
 
-### 核心原则：绝不丢失代码
+### Core Principle: Never Lose Code
 
-解决冲突时的绝对优先级是保留所有代码。如果无法自信地解决，必须：
-1. 清晰总结冲突
-2. 向用户展示两个版本
-3. 请求指导
-4. **绝不**自动选择一方
+**Critical principle**: The absolute priority when resolving conflicts is preserving all code. If unable to resolve confidently, you must:
+1. Clearly summarize the conflict
+2. Show both versions to the user
+3. Request guidance
+4. **Never** automatically choose one side
 
-### 冲突解决工作流
+### Conflict Resolution Workflow
 
-1. **保存合并前状态**
+1. **Save Pre-merge State**
    ```bash
    ./scripts/save_diff.sh
+   # Also create backup branch
    git branch <current-branch>-backup
    ```
 
-2. **检测和分析冲突**
+2. **Detect and Analyze Conflicts**
    ```bash
    ./scripts/analyze_conflicts.sh
    ./scripts/visualize_conflicts.sh
    ```
 
-3. **分析每个冲突**
-   - 我们的分支（HEAD/current）改变了什么
-   - 他们的分支（incoming）改变了什么
-   - 共同祖先（base）是什么
+3. **Deep Conflict Analysis**
+   
+   For complex conflicts, analyze:
+   - **Intent**: What problem does each version solve? What functionality is added/removed/modified? Is it a bug fix, feature, refactor, or optimization?
+   - **Approach comparison**: Different algorithms? Different API or interface changes? Different dependencies added/removed? Different side effects?
+   - **Trade-offs**: Performance vs readability? Simple vs robust?
 
-4. **确定解决策略**
-   - **保留双方（合并）**：两个变更都有价值且兼容
-   - **保留我们的（HEAD）**：我们的变更更新/更完整
-   - **保留他们的（Incoming）**：他们的变更更正确/完整
-   - **重写**：两边都有问题，创建更好的解决方案
-   - **询问用户**：无法自信决定
+4. **Determine Resolution Strategy**
+   - **Keep Both (Merge)**: Both changes are valuable and compatible
+   - **Keep Ours (HEAD)**: Our changes are newer/more complete
+   - **Keep Theirs (Incoming)**: Their changes are more correct/complete
+   - **Rewrite**: Both have issues, create a better solution
+   - **Ask User**: Cannot decide confidently
 
-5. **验证无代码丢失**
+5. **Post-Resolution Verification**
    ```bash
+   # Generate resolution diff
+   git diff --cached > .git/merge-diffs/resolution_$(date +%Y%m%d_%H%M%S).diff
+   
+   # Compare with backup branch
    git diff <branch>-backup <branch>
    ```
 
-详细指南请参考 [conflict-resolution.md](references/conflict-resolution.md)。
+### Special Cases
 
-## 脚本工具
+- **Detached HEAD**: Scripts detect and warn; recommend creating a branch before operations
+- **Submodules**: Detected and flagged; require special handling
+- **Large files**: Output automatically limited to prevent overwhelming context
+- **Rebase to less code**: Default to preserving current branch's work
 
-### analyze_changes.sh
-分析当前 Git 状态，包括分支、未提交变更、最近提交。
+See [conflict-resolution.md](references/conflict-resolution.md) for detailed guide.
 
-### analyze_conflicts.sh
-分析合并冲突，提供三路对比视图。
+## Rebase & Merge
 
-### git_quick.sh
-执行快速 Git 命令（gq 命令的后端实现）。
+### Interactive Rebase
+```bash
+# Clean up last N commits
+git rebase -i HEAD~N
 
-### save_diff.sh
-保存当前变更的快照，用于冲突解决前的备份。
+# Rebase feature branch onto main
+git checkout feature-branch
+git fetch origin
+git rebase origin/main
+```
 
-### show_help.sh
-显示使用帮助信息。
+### Merge Strategies
+```bash
+# Standard merge (preserves history)
+git merge feature-branch
 
-### visualize_conflicts.sh
-可视化展示冲突文件和冲突标记。
+# Squash merge (single commit)
+git merge --squash feature-branch
+```
 
-## 常用工作流
+## Common Tasks
 
-### 特性分支工作流
+### Stash Changes
+```bash
+git stash                    # Stash current changes
+git stash list              # List stashes
+git stash pop               # Apply and remove last stash
+git stash apply stash@{0}   # Apply specific stash
+```
+
+### Cherry-pick
+```bash
+git cherry-pick <commit-hash>
+```
+
+### Undo Changes
+```bash
+git restore <file>          # Discard working changes
+git restore --staged <file> # Unstage file
+git reset HEAD~1            # Undo last commit (keep changes)
+```
+
+## Script Tools
+
+| Script | Function | Purpose |
+|--------|----------|---------|
+| `analyze_changes.sh` | Analyze current Git state | Understand branch, uncommitted changes, recent commits |
+| `analyze_conflicts.sh` | Analyze merge conflicts | Provide three-way diff view, show only conflict sections |
+| `git_quick.sh` | Execute quick Git commands | Backend implementation for gq commands |
+| `save_diff.sh` | Save change snapshot | Backup before conflict resolution |
+| `show_help.sh` | Display usage help | Quick guide and examples |
+| `visualize_conflicts.sh` | Visualize conflicts | Show conflict files and markers |
+
+## Common Workflows
+
+### Feature Branch Workflow
 
 ```bash
-# 1. 从 main 创建特性分支
+# 1. Create feature branch from main
 gq b:n feature/new-feature
 
-# 2. 开发并提交
-# ... 编写代码 ...
+# 2. Develop and commit
+# ... write code ...
 ./scripts/analyze_changes.sh
-# 根据建议提交
+# Commit based on suggestions
 
-# 3. 保持与 main 同步
+# 3. Stay in sync with main
 git fetch origin
 git rebase origin/main
 
-# 4. 推送并创建 PR
+# 4. Push and create PR
 git push origin HEAD
 ```
 
-### 修复紧急 Bug
+### Hotfix Workflow
 
 ```bash
-# 1. 切换到 main 并创建修复分支
+# 1. Switch to main and create fix branch
 gq b-> main
 gq b:n fix/critical-bug
 
-# 2. 修复并提交
-# ... 修复代码 ...
+# 2. Fix and commit
+# ... fix code ...
 gq c "fix: resolve critical bug in auth"
 
-# 3. 推送
+# 3. Push
 git push origin HEAD
 ```
 
-### 清理提交历史
+### Clean Up History
 
 ```bash
-# 交互式 rebase 整理最近 3 个提交
+# Interactive rebase to clean up last 3 commits
 git rebase -i HEAD~3
 
-# 或者使用 amend 修复上次提交
+# Or use amend to fix last commit
 git commit --amend
 ```
 
-## 注意事项
+## Notes
 
-1. **永远不要**在共享分支上执行 `git push --force`
-2. **总是**在危险操作前创建备份分支
-3. **仔细审查** `git diff` 输出后再提交
-4. **保持提交原子性**：一个逻辑变更 = 一个提交
-5. **及时删除**已合并的分支
+1. **Never** use `git push --force` on shared branches
+2. **Always** create backup branches before dangerous operations
+3. **Carefully review** `git diff` output before committing
+4. **Keep commits atomic**: One logical change = One commit
+5. **Delete merged branches** promptly
 
-## 许可证
+## Resources
+
+- **Help script**: `scripts/show_help.sh` - Usage guide and examples
+- **Best practices reference**: `references/best-practices.md` - Commit conventions and workflows
+- **Conflict resolution guide**: `references/conflict-resolution.md` - Detailed analysis framework and templates
+- **Quick commands reference**: `references/quick-commands.md` - Shorthand for common operations
+
+## License
 
 MIT License

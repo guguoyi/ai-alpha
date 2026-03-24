@@ -21,9 +21,9 @@ Smart Git workflow assistant that helps you commit, push, and manage code change
 - Use natural language for commits, pushes, merges (full workflow with analysis and safety checks)
 - Examples:
   - "gq b:l" → Quick branch list
-  - "帮我提交代码" → Full commit workflow with analysis
+  - "help me commit code" → Full commit workflow with analysis
   - "gq:s" → Quick status
-  - "解决冲突" → Full conflict resolution with guidance
+  - "resolve conflicts" → Full conflict resolution with guidance
 
 ## Core Workflow
 
@@ -34,12 +34,15 @@ When helping with git operations, follow this sequence:
 For simple, read-only operations or quick checks, use `scripts/git_quick.sh`:
 
 **When user asks for:**
-- "列出分支" / "list branches" → `git_quick.sh b:l`
-- "切换到 xxx" / "switch to xxx" → `git_quick.sh b-> xxx`
-- "基于当前创建分支 xxx" / "create branch xxx" → `git_quick.sh b:n xxx`
-- "查看状态" / "check status" → `git_quick.sh s`
-- "最近提交" / "recent commits" → `git_quick.sh l`
-- "查看改动" / "show changes" → `git_quick.sh d`
+- "list branches" → `git_quick.sh b:l`
+- "switch to xxx" → `git_quick.sh "b->" xxx`
+- "create branch xxx" → `git_quick.sh b:n xxx`
+- "check status" → `git_quick.sh s`
+- "recent commits" → `git_quick.sh l`
+- "show changes" → `git_quick.sh "d"`
+  - If `GIT_QUICK_DIFF_TERMINAL` is set, opens in new terminal window
+  - Otherwise uses `$PAGER` (default: less)
+  - Staged changes: `git_quick.sh "d:s"`
 
 See `references/quick-commands.md` for full command list.
 
@@ -254,8 +257,10 @@ For rapid git operations, use `scripts/git_quick.sh` with the `gq` prefix patter
 
 **Usage in conversation:**
 - User: "gq b:l" → Run `scripts/git_quick.sh b:l`
-- User: "gq b-> feature" → Run `scripts/git_quick.sh b-> feature`
+- User: "gq b-> feature" → Run `scripts/git_quick.sh "b->" feature`
 - User: "gq:s" → Run `scripts/git_quick.sh s`
+
+**⚠️ Shell quoting rule**: Always quote the command argument when calling `git_quick.sh` to prevent shell misinterpreting special characters. Use `git_quick.sh "b->" <branch>`, never `git_quick.sh b-> <branch>` (shell will treat `>` as redirection).
 
 See `references/quick-commands.md` for full command list and usage patterns.
 
