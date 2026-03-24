@@ -4,6 +4,31 @@
 
 set -e
 
+# Configuration: terminal for diff display
+# Set GIT_QUICK_DIFF_TERMINAL to open diff in new terminal window
+# Examples: export GIT_QUICK_DIFF_TERMINAL="konsole"
+#           export GIT_QUICK_DIFF_TERMINAL="gnome-terminal --"
+#           export GIT_QUICK_DIFF_TERMINAL="alacritty -e"
+: "${GIT_QUICK_DIFF_PAGER:=${PAGER:-less}}"
+
+# Helper function to show diff including untracked files
+show_diff_with_untracked() {
+    # Show modified tracked files
+    git diff
+    # Show untracked new files
+    local untracked_files
+    untracked_files=$(git ls-files --others --exclude-standard)
+    if [ -n "$untracked_files" ]; then
+        echo ""
+        echo "=== Untracked New Files ==="
+        echo "$untracked_files" | while read -r file; do
+            echo ""
+            echo "+++ New file: $file +++"
+            cat "$file" 2>/dev/null || echo "(binary or empty file)"
+        done
+    fi
+}
+
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
     echo "Error: Not a git repository"
     exit 1
@@ -93,13 +118,21 @@ case "$CMD" in
     
     # Diff operations
     "d"|"diff")
-        # Unstaged changes
-        git diff
+        # Unstaged changes + untracked new files
+        if [ -n "$DISPLAY" ] && [ -n "$GIT_QUICK_DIFF_TERMINAL" ]; then
+            $GIT_QUICK_DIFF_TERMINAL bash -c "$(declare -f show_diff_with_untracked); show_diff_with_untracked; echo ''; echo 'Press Enter to close...'; read"
+        else
+            show_diff_with_untracked | $GIT_QUICK_DIFF_PAGER
+        fi
         ;;
     
     "d:s"|"ds")
-        # Staged changes
-        git diff --cached
+        # Staged changes - open in terminal if configured, else use pager
+        if [ -n "$DISPLAY" ] && [ -n "$GIT_QUICK_DIFF_TERMINAL" ]; then
+            $GIT_QUICK_DIFF_TERMINAL bash -c 'git diff --cached; echo ""; echo "Press Enter to close..."; read'
+        else
+            git diff --cached | $GIT_QUICK_DIFF_PAGER
+        fi
         ;;
     
     "d:st"|"dst")

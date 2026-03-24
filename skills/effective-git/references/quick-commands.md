@@ -14,19 +14,19 @@ This reference provides a shorthand command system for common git operations.
 **Examples:**
 - ✅ "gq b:l" → Triggers quick command
 - ✅ "gq:s" → Triggers quick command
-- ✅ "gq b-> feature" → Triggers quick command
+- ✅ "gq b-> feature" → Triggers quick command (runs as `git_quick.sh "b->" feature`)
 - ❌ "list branches" → Does NOT trigger (use full workflow)
 - ❌ "b:l" → Does NOT trigger (missing gq prefix)
 
 ## Usage
 
 ```bash
-scripts/git_quick.sh <command> [argument]
+scripts/git_quick.sh "<command>" [argument]
 ```
 
 When user says "gq <command>", run:
 ```bash
-scripts/git_quick.sh <command>
+scripts/git_quick.sh "<command>"
 ```
 
 ## Command Categories
@@ -37,7 +37,7 @@ scripts/git_quick.sh <command>
 |---------|-------|-------------|---------|
 | `b:l` | `bl` | List all branches (local + remote) | `gq b:l` |
 | `b:c` | `bc` | Show current branch | `gq b:c` |
-| `b->` | - | Switch to branch | `gq b-> feature` |
+| `b->` | - | Switch to branch | `gq "b->" feature` |
 | `b:n` | - | Create new branch from current | `gq b:n fix-bug` |
 | `b:d` | - | Delete branch (safe) | `gq b:d old-feature` |
 
@@ -55,8 +55,8 @@ scripts/git_quick.sh <command>
 
 | Command | Alias | Description | Example |
 |---------|-------|-------------|---------|
-| `d` | `diff` | Show unstaged changes | `gq d` |
-| `d:s` | `ds` | Show staged changes | `gq d:s` |
+| `d` | `diff` | Show unstaged changes (terminal/pager) | `gq d` |
+| `d:s` | `ds` | Show staged changes (terminal/pager) | `gq d:s` |
 | `d:st` | `dst` | Diff summary (stat) | `gq d:st` |
 
 ### 💾 Stash Operations
@@ -93,7 +93,7 @@ gq l          # Recent commits
 ### Branch Switching
 ```bash
 gq b:l        # See all branches
-gq b-> main   # Switch to main
+gq "b->" main   # Switch to main
 ```
 
 ### Create Feature Branch
@@ -105,9 +105,9 @@ gq b:n feature-x  # Create new branch
 ### Quick Save Work
 ```bash
 gq st:s       # Stash current work
-gq b-> main   # Switch branch
+gq "b->" main   # Switch branch
 # ... do something ...
-gq b-> feature-x  # Back to feature
+gq "b->" feature-x  # Back to feature
 gq st:p       # Restore work
 ```
 
@@ -134,3 +134,19 @@ These quick commands complement the main effective-git workflow:
 - Use main workflow (SKILL.md) for commits, pushes, and conflict resolution
 - Quick commands are read-only or low-risk operations
 - Dangerous operations still go through main workflow with confirmations
+
+## Configuration
+
+### Diff Display (d, d:s commands)
+
+Set `GIT_QUICK_DIFF_TERMINAL` to open diff in a new terminal window:
+
+```bash
+# ~/.bashrc or ~/.zshrc
+export GIT_QUICK_DIFF_TERMINAL="konsole"           # KDE
+export GIT_QUICK_DIFF_TERMINAL="gnome-terminal --" # GNOME
+export GIT_QUICK_DIFF_TERMINAL="alacritty -e"      # Alacritty
+export GIT_QUICK_DIFF_TERMINAL="kitty"             # Kitty
+```
+
+Without this variable, diff uses `$PAGER` (default: `less`).
